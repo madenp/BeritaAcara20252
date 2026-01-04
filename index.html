@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Berita Acara 2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>📋 Aplikasi Berita Acara 2026</h1>
+        </header>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1-indicator">
+                <span class="step-number">1</span>
+                <span class="step-label">Pilih Dosen</span>
+            </div>
+            <div class="step" id="step2-indicator">
+                <span class="step-number">2</span>
+                <span class="step-label">Pilih Mata Kuliah</span>
+            </div>
+            <div class="step" id="step3-indicator">
+                <span class="step-number">3</span>
+                <span class="step-label">Isi Berita Acara</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Pilih Dosen -->
+        <div class="step-container active" id="step1">
+            <h2>Pilih Nama Dosen</h2>
+            <div class="search-box">
+                <input type="text" id="searchDosen" placeholder="🔍 Cari nama dosen..." autocomplete="off">
+            </div>
+            <div class="loading" id="loading1" style="display: none;">Memuat data dosen...</div>
+            <div class="dosen-list" id="dosenList"></div>
+        </div>
+
+        <!-- Step 2: Pilih Mata Kuliah -->
+        <div class="step-container" id="step2" style="display: none;">
+            <h2>Pilih Mata Kuliah - Kelas</h2>
+            <div class="selected-dosen">
+                <span>Dosen: <strong id="selectedDosenName"></strong></span>
+                <button class="btn-back" onclick="goToStep1()">← Kembali</button>
+            </div>
+            <div class="loading" id="loading2" style="display: none;">📚 Memuat data Matakuliah - Kelas...</div>
+            <div class="jadwal-list" id="jadwalList"></div>
+        </div>
+
+        <!-- Step 3: Form Berita Acara -->
+        <div class="step-container" id="step3" style="display: none;">
+            <h2>Form Berita Acara</h2>
+            <div class="selected-info">
+                <div class="info-item">
+                    <span class="label">Dosen:</span>
+                    <span id="formDosenName"></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Mata Kuliah:</span>
+                    <span id="formMatakuliah"></span>
+                </div>
+                <button class="btn-back" onclick="goToStep2()">← Kembali</button>
+            </div>
+
+            <form id="beritaAcaraForm" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="idDosen">ID Dosen *</label>
+                    <input type="text" id="idDosen" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="namaDosen">Nama Dosen *</label>
+                    <input type="text" id="namaDosen" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="mataKuliah">Mata Kuliah *</label>
+                    <input type="text" id="mataKuliah" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="pertemuanKe">Pertemuan Ke *</label>
+                    <div class="loading" id="loadingPertemuan" style="display: none;">🔍 Mencari pertemuan sebelumnya...</div>
+                    <div class="card-selection" id="pertemuanContainer" style="display: none;">
+                        <div class="card-grid" id="pertemuanCards">
+                            <!-- Cards akan di-generate oleh JavaScript -->
+                        </div>
+                        <input type="hidden" id="pertemuanKe" required>
+                    </div>
+                    <div id="pertemuanStatus" class="status-message" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tanggal">Tanggal *</label>
+                    <input type="date" id="tanggal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="keterangan">Keterangan *</label>
+                    <div class="card-selection">
+                        <div class="card-grid">
+                            <div class="selection-card" data-value="Offline" onclick="selectKeterangan('Offline')">
+                                <div class="card-content">
+                                    <div class="card-icon">📱</div>
+                                    <div class="card-label">Offline</div>
+                                </div>
+                            </div>
+                            <div class="selection-card" data-value="Online" onclick="selectKeterangan('Online')">
+                                <div class="card-content">
+                                    <div class="card-icon">💻</div>
+                                    <div class="card-label">Online</div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="keterangan" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lamaPerkuliahan">Lama Perkuliahan *</label>
+                    <input type="text" id="lamaPerkuliahan" placeholder="Contoh: 1 Jam 30 Menit" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="materi">Materi yang Diberikan *</label>
+                    <textarea id="materi" rows="5" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="goToStep2()">Batal</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">Kirim Data</button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading3" style="display: none;">Mengirim data...</div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
