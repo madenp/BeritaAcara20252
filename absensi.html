@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Absensi Dosen 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styles specific to Absensi form */
+        .summary-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: white;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-item-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+
+        .summary-item-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>✅ Form Absensi Dosen 2026</h1>
+        </header>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1-indicator">
+                <span class="step-number">1</span>
+                <span class="step-label">Pilih Dosen</span>
+            </div>
+            <div class="step" id="step2-indicator">
+                <span class="step-number">2</span>
+                <span class="step-label">Pilih Mata Kuliah</span>
+            </div>
+            <div class="step" id="step3-indicator">
+                <span class="step-number">3</span>
+                <span class="step-label">Isi Absensi</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Pilih Dosen -->
+        <div class="step-container active" id="step1">
+            <h2>Pilih Nama Dosen</h2>
+            <div class="search-box">
+                <input type="text" id="searchDosen" placeholder="🔍 Cari nama dosen..." autocomplete="off">
+            </div>
+            <div class="loading" id="loading1" style="display: none;">Memuat data dosen...</div>
+            <div class="dosen-list" id="dosenList"></div>
+        </div>
+
+        <!-- Step 2: Pilih Mata Kuliah -->
+        <div class="step-container" id="step2" style="display: none;">
+            <h2>Pilih Mata Kuliah - Kelas</h2>
+            <div class="selected-dosen">
+                <span>Dosen: <strong id="selectedDosenName"></strong></span>
+                <button class="btn-back" onclick="goToStep1()">← Kembali</button>
+            </div>
+            <div class="loading" id="loading2" style="display: none;">📚 Memuat data Matakuliah - Kelas...</div>
+            <div class="jadwal-list" id="jadwalList"></div>
+        </div>
+
+        <!-- Step 3: Form Absensi -->
+        <div class="step-container" id="step3" style="display: none;">
+            <h2>Form Absensi</h2>
+            <div class="selected-info">
+                <div class="info-item">
+                    <span class="label">Dosen:</span>
+                    <span id="formDosenName"></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Mata Kuliah:</span>
+                    <span id="formMatakuliah"></span>
+                </div>
+                <button class="btn-back" onclick="goToStep2()">← Kembali</button>
+            </div>
+
+            <form id="absensiForm" onsubmit="submitForm(event)">
+                <!-- No (Auto-generated) -->
+                <input type="hidden" id="no">
+
+                <!-- Nama Dosen (Auto-filled, readonly) -->
+                <div class="form-group">
+                    <label for="namaDosen">Nama Dosen *</label>
+                    <input type="text" id="namaDosen" required readonly>
+                </div>
+
+                <!-- Matakuliah-Kelas (Auto-filled, readonly) -->
+                <div class="form-group">
+                    <label for="matakuliahKelas">Matakuliah - Kelas *</label>
+                    <input type="text" id="matakuliahKelas" required readonly>
+                </div>
+
+                <!-- Pertemuan -->
+                <div class="form-group">
+                    <label>Pertemuan Ke *</label>
+                    <div class="loading" id="loadingPertemuan" style="display: none;">🔍 Mencari pertemuan sebelumnya...
+                    </div>
+                    <div class="card-selection" id="pertemuanContainer" style="display: none;">
+                        <div class="card-grid" id="pertemuanCards">
+                            <!-- Cards akan di-generate oleh JavaScript -->
+                        </div>
+                        <input type="hidden" id="pertemuan" required>
+                    </div>
+                    <div id="pertemuanStatus" class="status-message" style="display: none;"></div>
+                </div>
+
+                <!-- Status Kehadiran -->
+                <div class="form-group">
+                    <label>Status Kehadiran *</label>
+                    <div class="card-selection">
+                        <div class="card-grid">
+                            <div class="selection-card" data-value="Offline" onclick="selectStatus('Offline')">
+                                <div class="card-content">
+                                    <div class="card-icon">📱</div>
+                                    <div class="card-label">Offline</div>
+                                </div>
+                            </div>
+                            <div class="selection-card" data-value="Online" onclick="selectStatus('Online')">
+                                <div class="card-content">
+                                    <div class="card-icon">💻</div>
+                                    <div class="card-label">Online</div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="status" required>
+                    </div>
+                </div>
+
+                <!-- Tanggal -->
+                <div class="form-group">
+                    <label for="tanggal">Tanggal *</label>
+                    <input type="date" id="tanggal" required>
+                </div>
+
+                <!-- Jam Perkuliahan -->
+                <div class="form-group">
+                    <label>Jam Perkuliahan *</label>
+                    <div class="card-selection">
+                        <div class="card-grid" id="jamCards">
+                            <div class="selection-card" data-value="07:30" onclick="selectJam('07:30')">
+                                <div class="card-content">
+                                    <div class="card-icon">🌅</div>
+                                    <div class="card-label">07:30</div>
+                                </div>
+                            </div>
+                            <div class="selection-card" data-value="10:30" onclick="selectJam('10:30')">
+                                <div class="card-content">
+                                    <div class="card-icon">☀️</div>
+                                    <div class="card-label">10:30</div>
+                                </div>
+                            </div>
+                            <div class="selection-card" data-value="13:30" onclick="selectJam('13:30')">
+                                <div class="card-content">
+                                    <div class="card-icon">🌤️</div>
+                                    <div class="card-label">13:30</div>
+                                </div>
+                            </div>
+                            <div class="selection-card" data-value="16:30" onclick="selectJam('16:30')">
+                                <div class="card-content">
+                                    <div class="card-icon">🌆</div>
+                                    <div class="card-label">16:30</div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="jamMulai" required>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="summary-section" id="summarySection" style="display: none;">
+                    <div class="summary-title">📊 Ringkasan Absensi</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-item-label">Dosen</div>
+                            <div class="summary-item-value" id="summaryDosen">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Mata Kuliah</div>
+                            <div class="summary-item-value" id="summaryMatkul">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Pertemuan</div>
+                            <div class="summary-item-value" id="summaryPertemuan">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Status</div>
+                            <div class="summary-item-value" id="summaryStatus">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Tanggal</div>
+                            <div class="summary-item-value" id="summaryTanggal">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-label">Jam</div>
+                            <div class="summary-item-value" id="summaryJam">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="goToStep2()">Batal</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">Kirim Absensi</button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading3" style="display: none;">Mengirim data absensi...</div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="absensi.js"></script>
+</body>
+
+</html>

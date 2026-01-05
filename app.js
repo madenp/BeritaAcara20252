@@ -12,16 +12,16 @@ let selectedPertemuan = null;
 let selectedKeterangan = null;
 
 // Inisialisasi aplikasi saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Set tanggal hari ini sebagai default
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tanggal').value = today;
-    
+
     // Load daftar dosen
     loadDosen();
-    
+
     // Event listener untuk search dosen
-    document.getElementById('searchDosen').addEventListener('input', function(e) {
+    document.getElementById('searchDosen').addEventListener('input', function (e) {
         filterDosen(e.target.value);
     });
 });
@@ -30,14 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadDosen() {
     const loadingEl = document.getElementById('loading1');
     const dosenListEl = document.getElementById('dosenList');
-    
+
     loadingEl.style.display = 'block';
     dosenListEl.innerHTML = '';
-    
+
     try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDosen`);
         const data = await response.json();
-        
+
         if (data.success) {
             dosenList = data.data;
             displayDosen(dosenList);
@@ -61,12 +61,12 @@ function escapeHtml(text) {
 // Fungsi untuk menampilkan daftar dosen
 function displayDosen(dosen) {
     const dosenListEl = document.getElementById('dosenList');
-    
+
     if (dosen.length === 0) {
         dosenListEl.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Tidak ada dosen ditemukan</p>';
         return;
     }
-    
+
     dosenListEl.innerHTML = dosen.map(dosen => {
         const safeId = escapeHtml(dosen.ID);
         const safeNama = escapeHtml(dosen.Nama);
@@ -80,7 +80,7 @@ function displayDosen(dosen) {
 
 // Fungsi untuk filter dosen berdasarkan pencarian
 function filterDosen(searchTerm) {
-    const filtered = dosenList.filter(dosen => 
+    const filtered = dosenList.filter(dosen =>
         dosen.Nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
     displayDosen(filtered);
@@ -89,26 +89,26 @@ function filterDosen(searchTerm) {
 // Fungsi untuk memilih dosen
 async function selectDosen(id, nama) {
     selectedDosen = { id, nama };
-    
+
     // Show loading di step 1
     const loading1 = document.getElementById('loading1');
     const dosenList = document.getElementById('dosenList');
-    
+
     loading1.style.display = 'flex';
     loading1.textContent = '⏳ Memproses pemilihan dosen...';
     dosenList.style.opacity = '0.5';
     dosenList.style.pointerEvents = 'none';
     dosenList.style.transition = 'opacity 0.3s ease';
-    
+
     // Update UI
     document.getElementById('selectedDosenName').textContent = nama;
     document.getElementById('formDosenName').textContent = nama;
     document.getElementById('idDosen').value = id;
     document.getElementById('namaDosen').value = nama;
-    
+
     // Pindah ke step 2 terlebih dahulu
     goToStep(2);
-    
+
     // Load jadwal dosen - kirim ID dan nama untuk matching yang lebih akurat
     await loadJadwal(id, nama);
 }
@@ -117,12 +117,12 @@ async function selectDosen(id, nama) {
 async function loadJadwal(dosenId, dosenNama) {
     const loadingEl = document.getElementById('loading2');
     const jadwalListEl = document.getElementById('jadwalList');
-    
+
     // Show loading dengan text yang lebih jelas
     loadingEl.style.display = 'flex';
     loadingEl.textContent = '📚 Memuat data Matakuliah - Kelas...';
     jadwalListEl.innerHTML = '';
-    
+
     // Reset step 1 loading
     const loading1 = document.getElementById('loading1');
     const dosenList = document.getElementById('dosenList');
@@ -133,17 +133,17 @@ async function loadJadwal(dosenId, dosenNama) {
         dosenList.style.opacity = '1';
         dosenList.style.pointerEvents = 'auto';
     }
-    
+
     try {
         // Kirim ID dan nama dosen untuk matching yang lebih akurat
         const encodedId = encodeURIComponent(dosenId);
         const encodedNama = encodeURIComponent(dosenNama);
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getJadwal&dosenId=${encodedId}&dosenNama=${encodedNama}`);
         const data = await response.json();
-        
+
         if (data.success) {
             jadwalList = data.data;
-            
+
             // Debug log
             console.log('=== DEBUG JADWAL ===');
             console.log('Dosen yang dicari:', dosenNama);
@@ -156,7 +156,7 @@ async function loadJadwal(dosenId, dosenNama) {
                 console.log(`  ${index + 1}. ${item.NamaDosen} - ${item.Matakuliah}`);
             });
             console.log('===================');
-            
+
             displayJadwal(jadwalList);
         } else {
             showError('step2', 'Gagal memuat jadwal: ' + data.error);
@@ -171,12 +171,12 @@ async function loadJadwal(dosenId, dosenNama) {
 // Fungsi untuk menampilkan daftar jadwal
 function displayJadwal(jadwal) {
     const jadwalListEl = document.getElementById('jadwalList');
-    
+
     if (jadwal.length === 0) {
         jadwalListEl.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Tidak ada jadwal ditemukan untuk dosen ini</p>';
         return;
     }
-    
+
     jadwalListEl.innerHTML = jadwal.map(item => {
         const safeId = escapeHtml(item.ID);
         const safeMatkul = escapeHtml(item.Matakuliah);
@@ -193,27 +193,27 @@ function displayJadwal(jadwal) {
 // Fungsi untuk memilih jadwal
 async function selectJadwal(id, matakuliah, ketua) {
     selectedJadwal = { id, matakuliah, ketua };
-    
+
     // Update UI
     document.getElementById('formMatakuliah').textContent = matakuliah;
     document.getElementById('mataKuliah').value = matakuliah;
-    
+
     // Pindah ke step 3
     goToStep(3);
-    
+
     // Show loading untuk pertemuan
     const loadingPertemuan = document.getElementById('loadingPertemuan');
     const pertemuanContainer = document.getElementById('pertemuanContainer');
-    
+
     loadingPertemuan.style.display = 'flex';
     pertemuanContainer.style.display = 'none';
-    
+
     // Generate card pertemuan
     generatePertemuanCards();
-    
+
     // Load data yang sudah ada untuk cek duplikasi
     await loadExistingData(matakuliah);
-    
+
     // Hide loading dan show container
     loadingPertemuan.style.display = 'none';
     pertemuanContainer.style.display = 'block';
@@ -223,20 +223,20 @@ async function selectJadwal(id, matakuliah, ketua) {
 function generatePertemuanCards() {
     const container = document.getElementById('pertemuanCards');
     container.innerHTML = '';
-    
+
     for (let i = 1; i <= 16; i++) {
         const card = document.createElement('div');
         card.className = 'selection-card';
         card.setAttribute('data-value', i);
         card.setAttribute('data-pertemuan', i);
         card.onclick = () => selectPertemuan(i);
-        
+
         card.innerHTML = `
             <div class="card-content">
                 <div class="card-label">${i}</div>
             </div>
         `;
-        
+
         container.appendChild(card);
     }
 }
@@ -244,21 +244,21 @@ function generatePertemuanCards() {
 // Fungsi untuk memilih pertemuan
 function selectPertemuan(pertemuan) {
     // Cek apakah pertemuan sudah terisi
-    const isAlreadyFilled = existingData.some(item => 
-        item.mataKuliah === selectedJadwal.matakuliah && 
+    const isAlreadyFilled = existingData.some(item =>
+        item.mataKuliah === selectedJadwal.matakuliah &&
         item.pertemuanKe === pertemuan
     );
-    
+
     if (isAlreadyFilled) {
         showError('step3', 'Pertemuan ' + pertemuan + ' sudah terisi untuk mata kuliah ini');
         return;
     }
-    
+
     // Remove selected class dari semua card
     document.querySelectorAll('#pertemuanCards .selection-card').forEach(card => {
         card.classList.remove('selected');
     });
-    
+
     // Add selected class ke card yang dipilih
     const selectedCard = document.querySelector(`#pertemuanCards .selection-card[data-pertemuan="${pertemuan}"]`);
     if (selectedCard) {
@@ -274,7 +274,7 @@ function selectKeterangan(keterangan) {
     document.querySelectorAll('.selection-card[data-value="Offline"], .selection-card[data-value="Online"]').forEach(card => {
         card.classList.remove('selected');
     });
-    
+
     // Add selected class ke card yang dipilih
     const selectedCard = document.querySelector(`.selection-card[data-value="${keterangan}"]`);
     if (selectedCard) {
@@ -290,11 +290,11 @@ async function loadExistingData(mataKuliah) {
         const encodedMatkul = encodeURIComponent(mataKuliah);
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getExistingData&mataKuliah=${encodedMatkul}`);
         const data = await response.json();
-        
+
         if (data.success) {
             existingData = data.data;
             updatePertemuanCardsStatus();
-            
+
             console.log('Data yang sudah ada:', existingData);
         } else {
             console.error('Error loading existing data:', data.error);
@@ -309,14 +309,14 @@ async function loadExistingData(mataKuliah) {
 // Fungsi untuk update status card pertemuan
 function updatePertemuanCardsStatus() {
     const cards = document.querySelectorAll('#pertemuanCards .selection-card');
-    
+
     cards.forEach(card => {
         const pertemuan = parseInt(card.getAttribute('data-pertemuan'));
-        const isAlreadyFilled = existingData.some(item => 
-            item.mataKuliah === selectedJadwal.matakuliah && 
+        const isAlreadyFilled = existingData.some(item =>
+            item.mataKuliah === selectedJadwal.matakuliah &&
             item.pertemuanKe === pertemuan
         );
-        
+
         if (isAlreadyFilled) {
             card.classList.add('disabled');
             card.onclick = null; // Disable click
@@ -325,12 +325,12 @@ function updatePertemuanCardsStatus() {
             card.onclick = () => selectPertemuan(pertemuan);
         }
     });
-    
+
     // Update status message
-    const filledCount = existingData.filter(item => 
+    const filledCount = existingData.filter(item =>
         item.mataKuliah === selectedJadwal.matakuliah
     ).length;
-    
+
     if (filledCount > 0) {
         const statusEl = document.getElementById('pertemuanStatus');
         statusEl.textContent = `⚠️ ${filledCount} pertemuan sudah terisi untuk mata kuliah ini`;
@@ -347,19 +347,19 @@ function goToStep(step) {
         el.classList.remove('active');
         el.style.display = 'none';
     });
-    
+
     // Hide all step indicators
     document.querySelectorAll('.step').forEach(el => {
         el.classList.remove('active');
     });
-    
+
     // Show selected step
     document.getElementById(`step${step}`).classList.add('active');
     document.getElementById(`step${step}`).style.display = 'block';
     document.getElementById(`step${step}-indicator`).classList.add('active');
-    
+
     currentStep = step;
-    
+
     // Clear messages
     clearMessages();
 }
@@ -389,27 +389,27 @@ function goToStep2() {
 // Fungsi untuk submit form
 async function submitForm(event) {
     event.preventDefault();
-    
+
     // Validasi
     if (!selectedDosen || !selectedJadwal) {
         showError('step3', 'Mohon lengkapi pilihan dosen dan mata kuliah');
         return;
     }
-    
+
     const submitBtn = document.getElementById('submitBtn');
     const loadingEl = document.getElementById('loading3');
     const form = document.getElementById('beritaAcaraForm');
-    
+
     // Disable button
     submitBtn.disabled = true;
     loadingEl.style.display = 'block';
     clearMessages();
-    
+
     // Prepare data - pastikan semua field diambil dengan benar
     const pertemuanKe = selectedPertemuan || document.getElementById('pertemuanKe').value.trim();
     const keterangan = selectedKeterangan || document.getElementById('keterangan').value.trim();
     const lamaPerkuliahan = document.getElementById('lamaPerkuliahan').value.trim();
-    
+
     // Validasi client-side
     if (!pertemuanKe || pertemuanKe === '') {
         showError('step3', 'Pertemuan Ke harus dipilih');
@@ -417,34 +417,34 @@ async function submitForm(event) {
         loadingEl.style.display = 'none';
         return;
     }
-    
+
     if (!keterangan || keterangan === '') {
         showError('step3', 'Keterangan harus dipilih (Offline atau Online)');
         submitBtn.disabled = false;
         loadingEl.style.display = 'none';
         return;
     }
-    
+
     if (!lamaPerkuliahan || lamaPerkuliahan === '') {
         showError('step3', 'Lama Perkuliahan harus diisi');
         submitBtn.disabled = false;
         loadingEl.style.display = 'none';
         return;
     }
-    
+
     // Cek duplikasi lagi sebelum submit
-    const isDuplicate = existingData.some(item => 
-        item.mataKuliah === selectedJadwal.matakuliah && 
+    const isDuplicate = existingData.some(item =>
+        item.mataKuliah === selectedJadwal.matakuliah &&
         item.pertemuanKe === parseInt(pertemuanKe)
     );
-    
+
     if (isDuplicate) {
         showError('step3', 'Pertemuan ' + pertemuanKe + ' sudah terisi untuk mata kuliah ini. Silakan pilih pertemuan lain.');
         submitBtn.disabled = false;
         loadingEl.style.display = 'none';
         return;
     }
-    
+
     const formData = {
         idDosen: selectedDosen.id,
         namaDosen: selectedDosen.nama,
@@ -455,38 +455,30 @@ async function submitForm(event) {
         lamaPerkuliahan: lamaPerkuliahan,
         materi: document.getElementById('materi').value.trim()
     };
-    
+
     // Debug log
     console.log('Data yang akan dikirim:', formData);
-    
+
     try {
-        // Menggunakan method POST dengan URL encoded
-        const formBody = {
-            'action': 'submitBeritaAcara',
-            'data': JSON.stringify(formData)
-        };
-        
-        // Convert to URL-encoded format
-        const encodedBody = Object.keys(formBody).map(key => 
-            encodeURIComponent(key) + '=' + encodeURIComponent(formBody[key])
-        ).join('&');
-        
+        // Menggunakan URLSearchParams untuk aplikasi/x-www-form-urlencoded (Standard API)
+        const params = new URLSearchParams();
+        params.append('action', 'submitBeritaAcara');
+        params.append('data', JSON.stringify(formData));
+
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: encodedBody
+            body: params
+            // Content-Type otomatis diset
         });
-        
+
         const result = await response.json();
-        
+
         // Debug log
         console.log('Response dari server:', result);
-        
+
         if (result.success) {
             showSuccess('step3', '✅ Data berhasil dikirim! Form akan direset...');
-            
+
             // Reset form setelah 2 detik
             setTimeout(() => {
                 form.reset();
@@ -515,7 +507,7 @@ async function submitForm(event) {
             }
             showError('step3', errorMsg);
         }
-        
+
     } catch (error) {
         showError('step3', 'Error: ' + error.message);
     } finally {
