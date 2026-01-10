@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ketua Tingkat 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Dashboard Container - Fullscreen */
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 2rem;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1.25rem 0.875rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+            color: #999;
+        }
+
+        /* Statistics Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 1.25rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        /* Main Content Area */
+        .dashboard-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Section Headers */
+        .section-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Grid Layout */
+        .keting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Card Styles */
+        .keting-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .keting-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .keting-card.locked {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf0 100%);
+            cursor: not-allowed;
+        }
+
+        .keting-card.locked:hover {
+            transform: none;
+        }
+
+        .keting-card.available {
+            cursor: pointer;
+        }
+
+        .keting-card.available:hover {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .matkul-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-right: 2.5rem;
+            line-height: 1.4;
+        }
+
+        .keting-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 70px;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .empty-state p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #333;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Messages */
+        .success-message,
+        .error-message {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            max-width: 400px;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+        }
+
+        .error-message {
+            background: #ef4444;
+            color: white;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.35rem;
+            }
+
+            .header-icon {
+                font-size: 1.5rem;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .stat-number {
+                font-size: 1.75rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .dashboard-content {
+                padding: 1.25rem;
+            }
+
+            .keting-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .section-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .section-title {
+                font-size: 1.15rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .success-message,
+            .error-message {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+
+            /* Additional tablet improvements */
+            .header-title h1 {
+                font-size: 1.25rem;
+            }
+
+            .search-input {
+                font-size: 0.9rem;
+            }
+
+            .keting-card {
+                padding: 1.25rem;
+            }
+
+            .matkul-name {
+                font-size: 1rem;
+            }
+
+            .info-message {
+                padding: 0.875rem 1rem;
+            }
+
+            .info-message-text {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            /* Header improvements */
+            .dashboard-header {
+                padding: 0.875rem;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .header-title {
+                justify-content: center;
+            }
+
+            .header-title h1 {
+                font-size: 1.1rem;
+            }
+
+            .header-icon {
+                font-size: 1.25rem;
+            }
+
+            /* Search bar */
+            .search-input {
+                padding: 0.75rem 1rem 0.75rem 2.75rem;
+                font-size: 0.875rem;
+            }
+
+            .search-icon {
+                left: 1rem;
+            }
+
+            /* List button - icon only */
+            .btn-list-keting span:not(.btn-icon) {
+                display: none;
+            }
+
+            .btn-list-keting {
+                padding: 0.625rem 0.875rem;
+                align-self: center;
+            }
+
+            /* Stats */
+            .stats-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.625rem 0.5rem;
+            }
+
+            .stat-number {
+                font-size: 1.35rem;
+                margin-bottom: 0.125rem;
+            }
+
+            .stat-label {
+                font-size: 0.625rem;
+                line-height: 1.2;
+            }
+
+            /* Content */
+            .dashboard-content {
+                padding: 0.875rem;
+            }
+
+            /* Section headers */
+            .section-header {
+                padding: 0.875rem;
+            }
+
+            .section-title {
+                font-size: 1rem;
+            }
+
+            .section-subtitle {
+                font-size: 0.75rem;
+            }
+
+            /* Cards */
+            .keting-card {
+                padding: 1rem;
+            }
+
+            .matkul-name {
+                font-size: 0.95rem;
+                padding-right: 2rem;
+            }
+
+            .info-row {
+                font-size: 0.8rem;
+            }
+
+            .info-label {
+                min-width: 60px;
+            }
+
+            /* Forms */
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 0.75rem;
+            }
+
+            .form-group input {
+                padding: 0.75rem 0.875rem;
+                font-size: 0.9rem;
+            }
+
+            /* Tabs */
+            .tab-button {
+                padding: 0.625rem 0.375rem;
+                font-size: 0.8rem;
+            }
+
+            /* Modals */
+            .modal-content,
+            .ketua-list-content,
+            .confirmation-box {
+                padding: 1.25rem;
+                margin: 0.25rem;
+            }
+
+            .modal-title,
+            .ketua-list-title,
+            .confirmation-title {
+                font-size: 1.1rem;
+            }
+
+            .confirmation-message {
+                font-size: 0.9rem;
+            }
+
+            /* Existing ketua items */
+            .existing-ketua-item {
+                padding: 0.875rem;
+            }
+
+            .existing-ketua-name {
+                font-size: 0.95rem;
+            }
+
+            .ketua-item-header {
+                padding: 1rem;
+            }
+
+            .ketua-item-details {
+                flex-direction: column;
+                gap: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            /* Info message */
+            .info-message {
+                padding: 0.75rem 0.875rem;
+            }
+
+            .info-message-text {
+                font-size: 0.8rem;
+            }
+
+            /* Footer */
+            .dashboard-footer {
+                padding: 0.875rem;
+            }
+
+            .footer-content {
+                font-size: 0.7rem;
+            }
+
+            /* Messages */
+            .success-message,
+            .error-message {
+                font-size: 0.875rem;
+                padding: 0.875rem 1rem;
+                top: 80px;
+            }
+
+            /* Empty state */
+            .empty-state {
+                padding: 2rem 1rem;
+            }
+
+            .empty-state p {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 360px) {
+            .header-title h1 {
+                font-size: 1rem;
+            }
+
+            .stat-card {
+                padding: 0.5rem 0.375rem;
+            }
+
+            .stat-number {
+                font-size: 1.25rem;
+            }
+
+            .stat-label {
+                font-size: 0.575rem;
+            }
+
+            .section-title {
+                font-size: 0.95rem;
+            }
+
+            .matkul-name {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .scroll-to-top:active {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .scroll-to-top {
+                width: 45px;
+                height: 45px;
+                font-size: 1.35rem;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scroll-to-top {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* Tab Styles */
+        .tab-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-icon {
+            font-size: 1.1rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Existing Ketua Styles */
+        .existing-ketua-info {
+            background: #f0f9ff;
+            border-left: 4px solid #667eea;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .existing-ketua-info p {
+            margin: 0;
+            color: #334155;
+            font-size: 0.875rem;
+        }
+
+        .search-existing {
+            margin-bottom: 1rem;
+        }
+
+        .search-existing-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-existing-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .existing-ketua-list {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .existing-ketua-item {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .existing-ketua-item:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(5px);
+        }
+
+        .existing-ketua-name {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .existing-ketua-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .existing-ketua-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .existing-ketua-detail strong {
+            color: #333;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        .existing-ketua-matkul {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .no-existing-ketua {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .no-existing-ketua p {
+            margin-bottom: 1rem;
+        }
+
+        /* Scrollbar Styles */
+        .existing-ketua-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .existing-ketua-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .existing-ketua-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .existing-ketua-list::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .confirmation-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .confirmation-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .confirmation-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-message {
+            font-size: 1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .confirmation-message strong {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .confirmation-actions button {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .confirmation-loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .confirmation-loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* List Ketua Tingkat Button */
+        .btn-list-keting {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-list-keting:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Ketua List Modal */
+        .ketua-list-modal {
+            display: none;
+            position: fixed;
+            z-index: 1500;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ketua-list-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .ketua-list-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .ketua-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .ketua-list-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ketua-list-close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .ketua-list-close:hover {
+            color: #333;
+        }
+
+        .ketua-list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ketua-list-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .ketua-list-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .ketua-item-header {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .ketua-item-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+
+        .ketua-item-info {
+            flex: 1;
+        }
+
+        .ketua-item-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .ketua-item-details {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .ketua-item-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .ketua-item-toggle {
+            font-size: 1.5rem;
+            color: #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .ketua-item-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .ketua-item-courses {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .ketua-item-courses.expanded {
+            max-height: 500px;
+        }
+
+        .courses-list {
+            padding: 1rem 1.25rem;
+            background: white;
+        }
+
+        .courses-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.75rem;
+        }
+
+        .course-item {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .course-icon {
+            color: #667eea;
+        }
+
+        .ketua-list-empty {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .ketua-list-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive for List Button */
+        @media (max-width: 768px) {
+            .btn-list-keting {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.875rem;
+            }
+
+            .ketua-list-content {
+                padding: 1.5rem;
+            }
+
+            .ketua-item-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-list-keting span:not(.btn-icon) {
+                display: none;
+            }
+
+            .btn-list-keting {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Info Message Box */
+        .info-message {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-left: 4px solid #0284c7;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1);
+        }
+
+        .info-message-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-message-text {
+            color: #075985;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-message-text strong {
+            font-weight: 700;
+            color: #0c4a6e;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .footer-copyright {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .info-message {
+                padding: 0.875rem 1rem;
+            }
+
+            .info-message-text {
+                font-size: 0.85rem;
+            }
+
+            .dashboard-footer {
+                padding: 1.25rem 1.5rem;
+            }
+
+            .footer-content {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="header-title">
+                        <span class="header-icon">👥</span>
+                        <h1>Dashboard Ketua Tingkat</h1>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Cari mata kuliah..."
+                            autocomplete="off">
+                    </div>
+
+                    <!-- List Ketua Tingkat Button -->
+                    <button class="btn-list-keting" onclick="showKetuaList()">
+                        <span class="btn-icon">📋</span>
+                        <span>List Ketua Tingkat</span>
+                    </button>
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-container" id="statsContainer" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Total Mata Kuliah</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="statFilled">0</div>
+                        <div class="stat-label">Sudah Ada Keting</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="statEmpty">0</div>
+                        <div class="stat-label">Belum Ada Keting</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            <!-- Loading -->
+            <div class="loading" id="mainLoading" style="display: none;">⏳ Memuat data...</div>
+
+            <!-- Section: Belum Ada Ketua Tingkat -->
+            <div id="emptySection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span>📝</span>
+                        <span>Belum Ada Ketua Tingkat</span>
+                    </h2>
+                    <p class="section-subtitle">Klik card untuk mendaftar sebagai ketua tingkat</p>
+                </div>
+                <div class="keting-grid" id="emptyGrid"></div>
+            </div>
+
+            <!-- Section: Sudah Ada Ketua Tingkat -->
+            <div id="filledSection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span>🔒</span>
+                        <span>Sudah Ada Ketua Tingkat</span>
+                    </h2>
+                    <p class="section-subtitle">Mata kuliah yang sudah memiliki ketua tingkat</p>
+                </div>
+                <div class="keting-grid" id="filledGrid"></div>
+
+                <!-- Info Message -->
+                <div class="info-message">
+                    <div class="info-message-icon">ℹ️</div>
+                    <p class="info-message-text">
+                        <strong>Informasi:</strong> Jika ada kekeliruan dalam data ketua tingkat,
+                        silakan menghubungi <strong>Staff Jurusan Akuntansi</strong> untuk pembaruan data.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📚</div>
+                <p>Tidak ada data mata kuliah ditemukan</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dashboard-footer">
+            <div class="footer-content">
+                <p class="footer-copyright">© 2026 Dashboard Ketua Tingkat - Made by <a href="#"
+                        class="footer-link">madenp</a></p>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="successMessage" class="success-message" style="display: none;"></div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal" id="ketingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Pilih Ketua Tingkat</h3>
+                <p class="modal-subtitle" id="modalMatkul"></p>
+            </div>
+
+            <!-- Tab Selection -->
+            <div class="tab-container">
+                <button class="tab-button active" onclick="switchTab('existing')" id="tabExisting">
+                    <span class="tab-icon">👤</span>
+                    <span>Pilih yang Ada</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('new')" id="tabNew">
+                    <span class="tab-icon">➕</span>
+                    <span>Daftar Baru</span>
+                </button>
+            </div>
+
+            <!-- Tab Content: Existing Ketua -->
+            <div class="tab-content active" id="contentExisting">
+                <div class="existing-ketua-info">
+                    <p>💡 Pilih ketua tingkat yang sudah pernah mendaftar di mata kuliah lain</p>
+                </div>
+
+                <div class="search-existing">
+                    <input type="text" id="searchExistingKetua" placeholder="🔍 Cari nama ketua tingkat..."
+                        class="search-existing-input">
+                </div>
+
+                <div class="existing-ketua-list" id="existingKetuaList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <div class="no-existing-ketua" id="noExistingKetua" style="display: none;">
+                    <p>Belum ada ketua tingkat yang terdaftar</p>
+                    <button class="btn-primary" onclick="switchTab('new')">Daftar Baru</button>
+                </div>
+            </div>
+
+            <!-- Tab Content: New Ketua -->
+            <div class="tab-content" id="contentNew">
+                <form id="ketingForm" onsubmit="submitKeting(event)">
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap *</label>
+                        <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nim">NIM *</label>
+                        <input type="text" id="nim" required placeholder="Masukkan NIM">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noWa">No WhatsApp *</label>
+                        <input type="tel" id="noWa" required placeholder="Contoh: 08123456789">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Batal</button>
+                        <button type="submit" class="btn-primary" id="submitBtn">Daftar</button>
+                    </div>
+                </form>
+
+                <div class="loading" id="formLoading" style="display: none;">Menyimpan data...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirmation-overlay" id="confirmationOverlay">
+        <div class="confirmation-box">
+            <div class="confirmation-icon">👤</div>
+            <div class="confirmation-title">Pilih Ketua Tingkat</div>
+            <div class="confirmation-message" id="confirmationMessage"></div>
+            <div class="confirmation-actions">
+                <button class="btn-cancel" onclick="closeConfirmation()">Batal</button>
+                <button class="btn-confirm" id="confirmBtn" onclick="confirmSelection()">Daftar</button>
+            </div>
+            <div class="confirmation-loading" id="confirmationLoading">
+                <span class="spinner"></span>
+                <span>Menyimpan data...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ketua List Modal -->
+    <div class="ketua-list-modal" id="ketuaListModal">
+        <div class="ketua-list-content">
+            <div class="ketua-list-header">
+                <h2 class="ketua-list-title">
+                    <span>📋</span>
+                    <span>Daftar Ketua Tingkat</span>
+                </h2>
+                <button class="ketua-list-close" onclick="closeKetuaList()">×</button>
+            </div>
+            <div class="ketua-list-items" id="ketuaListItems">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTopBtn" onclick="scrollToTop()" title="Kembali ke atas">
+        ⬆️
+    </button>
+
+    <script src="keting.js"></script>
+</body>
+
+</html>

@@ -104,6 +104,9 @@ function doGet(e) {
       const mataKuliah = e.parameter.mataKuliah || '';
       return ContentService.createTextOutput(JSON.stringify(getExistingAbsensi(mataKuliah)))
         .setMimeType(ContentService.MimeType.JSON);
+    } else if (action === 'getAllJadwal') {
+      return ContentService.createTextOutput(JSON.stringify(getAllJadwal()))
+        .setMimeType(ContentService.MimeType.JSON);
     } else {
       return ContentService.createTextOutput(JSON.stringify({
         success: false,
@@ -142,6 +145,10 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     } else if (action === 'submitAbsensi') {
       const result = submitAbsensi(data);
+      return ContentService.createTextOutput(JSON.stringify(result))
+        .setMimeType(ContentService.MimeType.JSON);
+    } else if (action === 'submitKeting') {
+      const result = submitKeting(data);
       return ContentService.createTextOutput(JSON.stringify(result))
         .setMimeType(ContentService.MimeType.JSON);
     } else {
@@ -632,3 +639,168 @@ function submitAbsensi(formData) {
     };
   }
 }
+
+// ============================================
+// KETUA TINGKAT FUNCTIONS
+// ============================================
+
+/**
+ * Get all jadwal data untuk halaman Ketua Tingkat
+ */
+function getAllJadwal() {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_JADWAL);
+    
+    if (!sheet) {
+      return {
+        success: false,
+        error: 'Sheet "Jadwal" tidak ditemukan'
+      };
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    
+    if (data.length <= 1) {
+      return {
+        success: true,
+        data: []
+      };
+    }
+    
+    const header = data[0];
+    
+    const matkulIndex = findHeaderIndex(header, 'Matakuliah - Kelas', false);
+    const ketuaIndex = findHeaderIndex(header, 'Ketua Tingkat', false);
+    const nimIndex = findHeaderIndex(header, 'NIM', false);
+    const noWaIndex = findHeaderIndex(header, 'No WA', false);
+    
+    if (matkulIndex === -1) {
+      return {
+        success: false,
+        error: 'Kolom "Matakuliah - Kelas" tidak ditemukan'
+      };
+    }
+    
+    const jadwalList = [];
+    
+    for (let i = 1; i < data.length; i++) {
+      const matkul = data[i][matkulIndex] ? data[i][matkulIndex].toString().trim() : '';
+      
+      if (!matkul || matkul === '') {
+        continue;
+      }
+      
+      const ketua = (ketuaIndex !== -1 && data[i][ketuaIndex]) ? data[i][ketuaIndex].toString().trim() : '';
+      const nim = (nimIndex !== -1 && data[i][nimIndex]) ? data[i][nimIndex].toString().trim() : '';
+      const noWa = (noWaIndex !== -1 && data[i][noWaIndex]) ? data[i][noWaIndex].toString().trim() : '';
+      
+      jadwalList.push({
+        Matakuliah: matkul,
+        Ketua: ketua,
+        NIM: nim,
+        NoWA: noWa
+      });
+    }
+    
+    return {
+      success: true,
+      data: jadwalList
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
+}
+
+/**
+ * Submit Ketua Tingkat
+ * Update semua baris dengan Matakuliah-Kelas yang sama
+ */
+function submitKeting(formData) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_JADWAL);
+    
+    if (!sheet) {
+      return {
+        success: false,
+        error: 'Sheet "Jadwal" tidak ditemukan'
+      };
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    const header = data[0];
+    
+    const matkulIndex = findHeaderIndex(header, 'Matakuliah - Kelas', false);
+    const ketuaIndex = findHeaderIndex(header, 'Ketua Tingkat', false);
+    const nimIndex = findHeaderIndex(header, 'NIM', false);
+    const noWaIndex = findHeaderIndex(header, 'No WA', false);
+    
+    if (matkulIndex === -1) {
+      return {
+        success: false,
+        error: 'Kolom "Matakuliah - Kelas" tidak ditemukan'
+      };
+    }
+    
+    if (ketuaIndex === -1 || nimIndex === -1 || noWaIndex === -1) {
+      return {
+        success: false,
+        error: 'Kolom "Ketua Tingkat", "NIM", atau "No WA" tidak ditemukan'
+      };
+    }
+    
+    // Validate form data
+    if (!formData.matakuliah || !formData.nama || !formData.nim || !formData.noWa) {
+      return {
+        success: false,
+        error: 'Data tidak lengkap'
+      };
+    }
+    
+    const targetMatkul = formData.matakuliah.toString().trim().toLowerCase();
+    let updatedCount = 0;
+    
+    // Update semua baris yang memiliki Matakuliah-Kelas yang sama
+    for (let i = 1; i < data.length; i++) {
+      const rowMatkul = data[i][matkulIndex] ? data[i][matkulIndex].toString().trim() : '';
+      
+      if (rowMatkul.toLowerCase() === targetMatkul) {
+        const rowNumber = i + 1; // 1-based index
+        
+        // Update kolom D (Ketua Tingkat)
+        sheet.getRange(rowNumber, ketuaIndex + 1).setValue(formData.nama.toString().trim());
+        
+        // Update kolom E (NIM)
+        sheet.getRange(rowNumber, nimIndex + 1).setValue(formData.nim.toString().trim());
+        
+        // Update kolom F (No WA)
+        sheet.getRange(rowNumber, noWaIndex + 1).setValue(formData.noWa.toString().trim());
+        
+        updatedCount++;
+      }
+    }
+    
+    if (updatedCount === 0) {
+      return {
+        success: false,
+        error: 'Tidak ada data yang diupdate. Mata kuliah tidak ditemukan.'
+      };
+    }
+    
+    return {
+      success: true,
+      message: 'Data ketua tingkat berhasil disimpan',
+      updatedRows: updatedCount
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
+}
+

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Koneksi Google Apps Script</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .url-display {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result.loading {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-badge.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-badge.pending {
+            background: #6c757d;
+            color: white;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .instructions h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔧 Test Koneksi Apps Script</h1>
+        <p class="subtitle">Gunakan halaman ini untuk memverifikasi koneksi ke Google Apps Script</p>
+
+        <!-- Test 1: Get Dosen -->
+        <div class="test-section">
+            <div class="test-title">
+                Test 1: Get Dosen
+                <span class="status-badge pending" id="status1">Belum Ditest</span>
+            </div>
+            <div class="url-display" id="url1">Loading...</div>
+            <button onclick="testGetDosen()">🧪 Test Get Dosen</button>
+            <button onclick="openInNewTab('url1')">🔗 Buka di Tab Baru</button>
+            <div id="result1"></div>
+        </div>
+
+        <!-- Test 2: Get Jadwal -->
+        <div class="test-section">
+            <div class="test-title">
+                Test 2: Get Jadwal
+                <span class="status-badge pending" id="status2">Belum Ditest</span>
+            </div>
+            <div class="url-display" id="url2">Loading...</div>
+            <button onclick="testGetJadwal()">🧪 Test Get Jadwal</button>
+            <button onclick="openInNewTab('url2')">🔗 Buka di Tab Baru</button>
+            <div id="result2"></div>
+        </div>
+
+        <!-- Test 3: Submit Absensi -->
+        <div class="test-section">
+            <div class="test-title">
+                Test 3: Submit Absensi (POST)
+                <span class="status-badge pending" id="status3">Belum Ditest</span>
+            </div>
+            <div class="url-display" id="url3">Loading...</div>
+            <button onclick="testSubmitAbsensi()">🧪 Test Submit Absensi</button>
+            <div id="result3"></div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>📋 Cara Menggunakan:</h3>
+            <ol>
+                <li>Pastikan Anda sudah deploy Google Apps Script sebagai Web App</li>
+                <li>URL deployment sudah diupdate di file <code>absensi.js</code></li>
+                <li>Klik tombol "Test" untuk setiap endpoint</li>
+                <li>Jika ada error, klik "Buka di Tab Baru" untuk melihat error detail</li>
+                <li>Status ✅ = Berhasil, ❌ = Gagal</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // URL dari absensi.js
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlRtNU3P1yiV-Y3u2xLKeXqw28tyPP988gsWQ0EgjTkRXpcXiyDhs6d049zM6lWXeXLA/exec';
+
+        // Initialize URLs
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('url1').textContent = `${GOOGLE_SCRIPT_URL}?action=getDosen`;
+            document.getElementById('url2').textContent = `${GOOGLE_SCRIPT_URL}?action=getJadwal&dosenNama=Test`;
+            document.getElementById('url3').textContent = `${GOOGLE_SCRIPT_URL} (POST)`;
+        });
+
+        // Test Get Dosen
+        async function testGetDosen() {
+            const resultEl = document.getElementById('result1');
+            const statusEl = document.getElementById('status1');
+
+            resultEl.className = 'result loading';
+            resultEl.innerHTML = '<div class="spinner"></div>Mengirim request...';
+            statusEl.className = 'status-badge pending';
+            statusEl.textContent = 'Testing...';
+
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDosen`);
+                const result = await response.json();
+
+                if (result.success) {
+                    resultEl.className = 'result success';
+                    resultEl.textContent = '✅ BERHASIL!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge success';
+                    statusEl.textContent = '✅ Berhasil';
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ ERROR!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge error';
+                    statusEl.textContent = '❌ Gagal';
+                }
+            } catch (error) {
+                resultEl.className = 'result error';
+                resultEl.textContent = `❌ NETWORK ERROR!\n\nError: ${error.message}\n\nKemungkinan penyebab:\n1. URL deployment salah\n2. Apps Script belum di-deploy\n3. Deployment tidak memiliki akses "Anyone"\n4. Browser memblokir request (CORS)`;
+                statusEl.className = 'status-badge error';
+                statusEl.textContent = '❌ Gagal';
+            }
+        }
+
+        // Test Get Jadwal
+        async function testGetJadwal() {
+            const resultEl = document.getElementById('result2');
+            const statusEl = document.getElementById('status2');
+
+            resultEl.className = 'result loading';
+            resultEl.innerHTML = '<div class="spinner"></div>Mengirim request...';
+            statusEl.className = 'status-badge pending';
+            statusEl.textContent = 'Testing...';
+
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getJadwal&dosenNama=Test`);
+                const result = await response.json();
+
+                if (result.success !== undefined) {
+                    resultEl.className = 'result success';
+                    resultEl.textContent = '✅ BERHASIL!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge success';
+                    statusEl.textContent = '✅ Berhasil';
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ ERROR!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge error';
+                    statusEl.textContent = '❌ Gagal';
+                }
+            } catch (error) {
+                resultEl.className = 'result error';
+                resultEl.textContent = `❌ NETWORK ERROR!\n\nError: ${error.message}`;
+                statusEl.className = 'status-badge error';
+                statusEl.textContent = '❌ Gagal';
+            }
+        }
+
+        // Test Submit Absensi
+        async function testSubmitAbsensi() {
+            const resultEl = document.getElementById('result3');
+            const statusEl = document.getElementById('status3');
+
+            resultEl.className = 'result loading';
+            resultEl.innerHTML = '<div class="spinner"></div>Mengirim request POST...';
+            statusEl.className = 'status-badge pending';
+            statusEl.textContent = 'Testing...';
+
+            const testData = {
+                namaDosen: 'Test Dosen',
+                matakuliahKelas: 'Test Matkul - A',
+                pertemuan: '1',
+                status: 'Hadir',
+                tanggal: '2026-01-05',
+                jamMulai: '08:00',
+                jamSelesai: '10:00',
+                jam: '08:00 - 10:00'
+            };
+
+            try {
+                // Menggunakan application/x-www-form-urlencoded untuk menghindari preflight OPTIONS yang sering bermasalah di GAS
+                const params = new URLSearchParams();
+                params.append('action', 'submitAbsensi');
+                params.append('data', JSON.stringify(testData));
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: params
+                    // Content-Type otomatis diset oleh fetch saat body adalah URLSearchParams
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    resultEl.className = 'result success';
+                    resultEl.textContent = '✅ BERHASIL!\n\nData test berhasil dikirim!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge success';
+                    statusEl.textContent = '✅ Berhasil';
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ ERROR!\n\n' + JSON.stringify(result, null, 2);
+                    statusEl.className = 'status-badge error';
+                    statusEl.textContent = '❌ Gagal';
+                }
+            } catch (error) {
+                resultEl.className = 'result error';
+                resultEl.textContent = `❌ NETWORK ERROR!\n\nError: ${error.message}\n\nKemungkinan penyebab:\n1. Apps Script belum di-deploy ulang setelah update kode (PASTIKAN New Deployment)\n2. Deployment tidak memiliki akses "Anyone"\n3. Browser memblokir request (CORS)\n\nTips: Coba deploy ulang dengan "New Deployment" dan pastikan "Who has access" = "Anyone".`;
+                statusEl.className = 'status-badge error';
+                statusEl.textContent = '❌ Gagal';
+            }
+        }
+
+        // Open URL in new tab
+        function openInNewTab(urlElementId) {
+            const url = document.getElementById(urlElementId).textContent;
+            if (url && !url.includes('POST')) {
+                window.open(url, '_blank');
+            } else {
+                alert('POST request tidak bisa dibuka di tab baru. Gunakan tombol Test.');
+            }
+        }
+    </script>
+</body>
+
+</html>
